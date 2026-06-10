@@ -1,0 +1,9 @@
+{
+	"nombre": "Válvula V-102 atascada cerrada",
+	"descripcion": "A los 15 s, V-102 se atasca cerrada: TK-101 empieza a llenarse (riesgo de rebalse) y TK-201 a vaciarse (riesgo de dejar sin agua a la red). A los 120 s la válvula se libera.",
+	"eventos": [
+		{"t": 5, "accion": "mensaje", "texto": "operación normal..."},
+		{"t": 15, "accion": "valvula_atascada", "tag": "V102", "valor": 0.0},
+		{"t": 120, "accion": "valvula_liberada", "tag": "V102"}
+	]
+}

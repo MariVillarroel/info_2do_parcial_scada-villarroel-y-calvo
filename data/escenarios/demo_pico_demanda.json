@@ -1,0 +1,8 @@
+{
+	"nombre": "Pico de demanda de la red",
+	"descripcion": "A los 20 s la demanda de la red casi se duplica: TK-201 cae. A los 100 s vuelve a la normalidad. Un buen control automático (M2) mantiene el nivel sin intervención.",
+	"eventos": [
+		{"t": 20, "accion": "demanda", "valor": 1.9},
+		{"t": 100, "accion": "demanda", "valor": 1.0}
+	]
+}
