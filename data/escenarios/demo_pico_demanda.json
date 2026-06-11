@@ -1,8 +1,8 @@
 {
 	"nombre": "Pico de demanda de la red",
-	"descripcion": "A los 20 s la demanda de la red casi se duplica: TK-201 cae. A los 100 s vuelve a la normalidad. Un buen control automático (M2) mantiene el nivel sin intervención.",
+	"descripcion": "A los 20 s la demanda de la red sube a 2.5x: TK-201 cae hasta disparar la alarma L (~11–14 %). A los 180 s la demanda vuelve a la normalidad y el nivel se recupera. Buen escenario para probar las alarmas (M1) y leer la historia en la tendencia (M3); ni en AUTO debería llegar a LL ni HH (M2).",
 	"eventos": [
-		{"t": 20, "accion": "demanda", "valor": 1.9},
-		{"t": 100, "accion": "demanda", "valor": 1.0}
+		{"t": 20, "accion": "demanda", "valor": 2.5},
+		{"t": 180, "accion": "demanda", "valor": 1.0}
 	]
 }

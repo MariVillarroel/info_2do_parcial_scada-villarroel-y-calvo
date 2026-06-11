@@ -14,7 +14,8 @@ extends Node
 #
 # 2) INTERLOCKS (enclavamientos de seguridad), activos SIEMPRE, incluso en
 #    modo MANUAL — en una planta real el operador no puede romper la física:
-#    - si TK-101 está casi lleno (p. ej. >= 95 %), la bomba NO puede marchar;
+#    - si TK-101 está casi lleno (p. ej. >= 93 %, ANTES de que el nivel llegue
+#      al límite HH de la alarma), la bomba NO puede marchar;
 #    - si TK-201 está casi lleno, V-102 NO puede estar abierta;
 #    - documenta en tu README cualquier otro que añadas.
 #
