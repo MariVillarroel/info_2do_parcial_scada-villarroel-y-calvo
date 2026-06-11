@@ -49,113 +49,113 @@ offset_bottom = 648.0
 mouse_filter = 2
 
 [node name="tuberia_pozo" type="Line2D" parent="sinoptico"]
-points = PackedVector2Array(30, 458, 90, 458)
+points = PackedVector2Array(30, 448, 90, 448)
 width = 6.0
 default_color = Color(0.33, 0.42, 0.52, 1)
 
 [node name="tuberia_bomba_tk101" type="Line2D" parent="sinoptico"]
-points = PackedVector2Array(146, 458, 180, 458, 180, 100, 255, 100, 255, 125)
+points = PackedVector2Array(146, 448, 165, 448, 165, 70, 235, 70, 235, 104)
 width = 6.0
 default_color = Color(0.33, 0.42, 0.52, 1)
 
 [node name="tuberia_tk101_v102" type="Line2D" parent="sinoptico"]
-points = PackedVector2Array(255, 320, 255, 370, 350, 370)
+points = PackedVector2Array(235, 270, 235, 320, 330, 320)
 width = 6.0
 default_color = Color(0.33, 0.42, 0.52, 1)
 
 [node name="tuberia_v102_tk201" type="Line2D" parent="sinoptico"]
-points = PackedVector2Array(406, 370, 525, 370, 525, 302)
+points = PackedVector2Array(386, 320, 525, 320, 525, 344)
 width = 6.0
 default_color = Color(0.33, 0.42, 0.52, 1)
 
 [node name="tuberia_tk201_v201" type="Line2D" parent="sinoptico"]
-points = PackedVector2Array(525, 500, 525, 540, 640, 540)
+points = PackedVector2Array(525, 510, 525, 545, 640, 545)
 width = 6.0
 default_color = Color(0.33, 0.42, 0.52, 1)
 
 [node name="tuberia_red" type="Line2D" parent="sinoptico"]
-points = PackedVector2Array(696, 540, 756, 540)
+points = PackedVector2Array(696, 545, 752, 545)
 width = 6.0
 default_color = Color(0.33, 0.42, 0.52, 1)
 
 [node name="pozo_label" type="Label" parent="sinoptico"]
 offset_left = 6.0
-offset_top = 470.0
+offset_top = 462.0
 offset_right = 80.0
-offset_bottom = 492.0
+offset_bottom = 484.0
 text = "POZO"
 
 [node name="red_label" type="Label" parent="sinoptico"]
-offset_left = 688.0
-offset_top = 550.0
-offset_right = 760.0
-offset_bottom = 572.0
+offset_left = 706.0
+offset_top = 505.0
+offset_right = 758.0
+offset_bottom = 527.0
 text = "RED"
 
 [node name="bomba_b101" type="Control" parent="sinoptico"]
 layout_mode = 0
 offset_left = 90.0
-offset_top = 430.0
+offset_top = 420.0
 offset_right = 146.0
-offset_bottom = 486.0
+offset_bottom = 476.0
 script = ExtResource("5_bomba")
 etiqueta = "B-101"
 
 [node name="tanque_tk101" type="Control" parent="sinoptico"]
 layout_mode = 0
-offset_left = 200.0
-offset_top = 120.0
-offset_right = 310.0
-offset_bottom = 320.0
+offset_left = 180.0
+offset_top = 100.0
+offset_right = 290.0
+offset_bottom = 270.0
 script = ExtResource("4_tanque")
 etiqueta = "TK-101"
 
 [node name="tanque_tk201" type="Control" parent="sinoptico"]
 layout_mode = 0
 offset_left = 470.0
-offset_top = 300.0
+offset_top = 340.0
 offset_right = 580.0
-offset_bottom = 500.0
+offset_bottom = 510.0
 script = ExtResource("4_tanque")
 etiqueta = "TK-201"
 
 [node name="valvula_v102" type="Control" parent="sinoptico"]
 layout_mode = 0
-offset_left = 350.0
-offset_top = 350.0
-offset_right = 406.0
-offset_bottom = 390.0
+offset_left = 330.0
+offset_top = 300.0
+offset_right = 386.0
+offset_bottom = 340.0
 script = ExtResource("6_valvula")
 etiqueta = "V-102"
 
 [node name="valvula_v201" type="Control" parent="sinoptico"]
 layout_mode = 0
 offset_left = 640.0
-offset_top = 520.0
+offset_top = 525.0
 offset_right = 696.0
-offset_bottom = 560.0
+offset_bottom = 565.0
 script = ExtResource("6_valvula")
 etiqueta = "V-201"
 
 [node name="f101_label" type="Label" parent="sinoptico"]
-offset_left = 190.0
-offset_top = 64.0
-offset_right = 360.0
-offset_bottom = 86.0
+offset_left = 245.0
+offset_top = 58.0
+offset_right = 420.0
+offset_bottom = 80.0
 text = "F101: — m³/s"
 
 [node name="f102_label" type="Label" parent="sinoptico"]
-offset_left = 330.0
-offset_top = 392.0
-offset_right = 500.0
-offset_bottom = 414.0
+offset_left = 392.0
+offset_top = 286.0
+offset_right = 560.0
+offset_bottom = 308.0
 text = "F102: — m³/s"
 
 [node name="f201_label" type="Label" parent="sinoptico"]
-offset_left = 560.0
-offset_top = 565.0
-offset_right = 730.0
-offset_bottom = 587.0
+offset_left = 460.0
+offset_top = 575.0
+offset_right = 620.0
+offset_bottom = 597.0
 text = "F201: — m³/s"
 
 [node name="panel" type="PanelContainer" parent="."]
@@ -182,7 +182,7 @@ text = "OPERACIÓN"
 
 [node name="banner_alarma" type="Label" parent="panel/margen/columna"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.35, 0.35, 1)
+theme_override_colors/font_color = Color(0.55, 0.6, 0.65, 1)
 text = "— sin alarmas (M1) —"
 
 [node name="fila_alarmas" type="HBoxContainer" parent="panel/margen/columna"]
@@ -200,6 +200,7 @@ text = "Modo: MANUAL"
 [node name="historial" type="ItemList" parent="panel/margen/columna"]
 custom_minimum_size = Vector2(0, 160)
 layout_mode = 2
+size_flags_vertical = 3
 
 [node name="fila_escenario" type="HBoxContainer" parent="panel/margen/columna"]
 layout_mode = 2

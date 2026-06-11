@@ -41,6 +41,8 @@ func _draw() -> void:
 	draw_colored_polygon(PackedVector2Array([
 		Vector2(c.x + w, c.y - h), Vector2(c.x, c.y), Vector2(c.x + w, c.y + h),
 	]), _color())
-	draw_string(fuente, Vector2(0, size.y + 14),
-			"%s  %.0f%%" % [etiqueta, apertura * 100],
-			HORIZONTAL_ALIGNMENT_CENTER, size.x, 13, Color(0.85, 0.88, 0.92))
+	# centrado manual sin recorte (el texto es más ancho que el widget)
+	var texto = "%s  %.0f%%" % [etiqueta, apertura * 100]
+	var ancho_texto = fuente.get_string_size(texto, HORIZONTAL_ALIGNMENT_LEFT, -1, 13).x
+	draw_string(fuente, Vector2((size.x - ancho_texto) / 2.0, size.y + 16), texto,
+			HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(0.85, 0.88, 0.92))

@@ -37,5 +37,7 @@ func _draw() -> void:
 		centro + Vector2(radio * 0.6, 0),
 		centro + Vector2(-radio * 0.4, radio * 0.5),
 	]), Color(0.95, 0.95, 0.98))
-	draw_string(fuente, Vector2(0, size.y + 16), etiqueta,
-			HORIZONTAL_ALIGNMENT_CENTER, size.x, 13, Color(0.85, 0.88, 0.92))
+	# centrado manual sin recorte
+	var ancho_texto = fuente.get_string_size(etiqueta, HORIZONTAL_ALIGNMENT_LEFT, -1, 13).x
+	draw_string(fuente, Vector2((size.x - ancho_texto) / 2.0, size.y + 16), etiqueta,
+			HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(0.85, 0.88, 0.92))

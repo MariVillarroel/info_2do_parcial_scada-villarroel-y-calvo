@@ -1,7 +1,7 @@
 # Segundo Parcial — Planta SCADA (Infografía, I/2026)
 
-**Modalidad:** proyecto para casa, individual. **Plazo:** 1 a 2 semanas (la fecha exacta se publica en Moodle).
-**Motor:** Godot 4.4 o superior. **Entrega:** URL de tu repositorio (ver *Entrega* al final).
+**Modalidad:** proyecto para casa, individual. **Plazo y fecha de entrega:** se publican en Moodle.
+**Motor:** Godot 4.6. **Entrega:** URL de tu repositorio (ver *Entrega* al final).
 
 > Esta es la **pista C** del parcial. Hay varias pistas (Match-3, Micromouse,
 > Planta SCADA); eliges **una sola**. Todas valen lo mismo y se califican con
@@ -181,5 +181,5 @@ tags. Cita en tu README todo recurso externo que hayas usado.
    interlocks extra), y la lista de recursos externos consultados (con enlaces).
 4. Entrega la **URL de tu repositorio** por Moodle antes de la fecha límite.
 
-Asegúrate de que el proyecto **abra y corra en Godot 4.4+ sin errores** en una
+Asegúrate de que el proyecto **abra y corra en Godot 4.6 sin errores** en una
 máquina limpia (no subas la carpeta `.godot/`).

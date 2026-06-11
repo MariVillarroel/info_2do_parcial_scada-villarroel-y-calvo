@@ -12,15 +12,12 @@ config_version=5
 
 config/name="planta_scada"
 run/main_scene="res://scenes/hmi.tscn"
-config/features=PackedStringArray("4.4", "Forward Plus")
+config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
 [display]
 
-window/size/viewport_width=1152
-window/size/viewport_height=648
 window/stretch/mode="canvas_items"
-window/stretch/aspect="keep"
 
 [rendering]
 
