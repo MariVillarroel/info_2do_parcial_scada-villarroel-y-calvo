@@ -39,8 +39,18 @@ var _sfx_alarma: AudioStreamPlayer
 var _sfx_reconocer: AudioStreamPlayer
 var _sfx_trip: AudioStreamPlayer
 
+#trip 
+var _en_trip := false
+var _panel_trip: PanelContainer # creado por código en _ready
+var _lbl_motivo_trip: Label
+
 #ciclos de apertura de valvulas (circulo)
 const PASOS_VALVULA := [0.0, 0.5, 1.0]
+
+#varibales
+
+
+#INICIALIZACION 
 func _ready() -> void:
 	escenarios.planta = planta
 	planta.tick.connect(_on_tick_planta)
@@ -48,7 +58,7 @@ func _ready() -> void:
 	escenarios.evento_escenario.connect(_on_evento_escenario)
 	_poblar_selector_escenarios()
 	_init_sonidos()
-
+	_init_panel_trip()
 
 func _init_sonidos() -> void:
 	_sfx_click     = _crear_player("res://assets/sounds/click.wav",    false)
@@ -70,15 +80,85 @@ func _crear_player(ruta: String, loop: bool) -> AudioStreamPlayer:
 	add_child(player)
 	return player
 
+func _init_panel_trip() -> void:
+	#el panel transparente 
+	_panel_trip = PanelContainer.new()
+	_panel_trip.name = "panel_trip"
+	_panel_trip.set_anchors_preset(Control.PRESET_FULL_RECT)
+	#fondo rojo oscuro 
+	var estilo := StyleBoxFlat.new()
+	estilo.bg_color = Color(0.45, 0.02, 0.02, 0.92)
+	_panel_trip.add_theme_stylebox_override("panel", estilo)
+	_panel_trip.visible = false
+	add_child(_panel_trip)
 
+	var centrado := CenterContainer.new()
+	centrado.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_panel_trip.add_child(centrado)
+
+	var columna := VBoxContainer.new()
+	columna.alignment = BoxContainer.ALIGNMENT_CENTER
+	columna.add_theme_constant_override("separation", 24)
+	centrado.add_child(columna)
+
+	var lbl_titulo := Label.new()
+	lbl_titulo.name = "lbl_titulo"
+	lbl_titulo.text = "PARADA DE EMERGENCIA"
+	lbl_titulo.add_theme_font_size_override("font_size", 32)
+	lbl_titulo.add_theme_color_override("font_color", Color(1.0, 0.25, 0.25)) #rojo vivo porque emergenciaa
+	lbl_titulo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	columna.add_child(lbl_titulo)
+
+	var lbl_motivo := Label.new()
+	lbl_motivo.name = "lbl_motivo"
+	lbl_motivo.text = ""
+	lbl_motivo.add_theme_font_size_override("font_size", 20)
+	lbl_motivo.add_theme_color_override("font_color", Color(1.0, 0.85, 0.85))
+	lbl_motivo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_lbl_motivo_trip = lbl_motivo
+	columna.add_child(lbl_motivo)
+
+	var btn := Button.new()
+	btn.name = "btn_reiniciar"
+	btn.text = "Reiniciar planta"
+	btn.custom_minimum_size = Vector2(200, 48)
+	btn.pressed.connect(_on_reiniciar_pressed)
+	columna.add_child(btn)
+
+#helpers sonido
 func _play(player: AudioStreamPlayer) -> void:
 	if player != null and not player.playing:
 		player.play()
-
-
+		
 func _stop(player: AudioStreamPlayer) -> void:
 	if player != null:
 		player.stop()
+
+#trip funciones 
+func _disparar_trip(motivo: String) -> void:
+	if _en_trip:
+		return
+	_en_trip = true
+	planta.set_physics_process(false)   # congela la simulación
+	escenarios.detener()
+	planta.comandar("B101.marcha", false)
+	_stop(_sfx_alarma)
+	_play(_sfx_trip)
+	# Mostrar pantalla
+	_lbl_motivo_trip.text = motivo
+	_panel_trip.visible = true
+
+
+func _on_reiniciar_pressed() -> void:
+	_en_trip = false
+	_panel_trip.visible = false
+	_stop(_sfx_trip)
+	planta.reiniciar()
+	planta.set_physics_process(true)
+	# Limpiar historial visual
+	historial.clear()
+	banner_alarma.text = "— sin alarmas (M1) —"
+	banner_alarma.add_theme_color_override("font_color", Color(0.55, 0.60, 0.65))
 
 # Lista los .json de res://data/escenarios/ en el selector. Este patrón
 # (recorrer una carpeta de datos en vez de codificar la lista) es el mismo
@@ -93,6 +173,8 @@ func _poblar_selector_escenarios() -> void:
 
 
 func _on_tick_planta(datos: Dictionary) -> void:
+	if _en_trip:
+		return
 	# B1 
 	tanque_tk101.set_pct(datos["TK101.pct"])
 	tanque_tk201.set_pct(datos["TK201.pct"])
@@ -113,9 +195,11 @@ func _on_tick_planta(datos: Dictionary) -> void:
 
 func _on_evento_planta(tipo: String, mensaje: String) -> void:
 	print("EVENTO [", tipo, "]: ", mensaje)
-	# TODO (PARCIAL · B3): "rebalse" y "vacio" son eventos críticos: pasa a un
-	# estado de PARADA DE EMERGENCIA explícito (bomba fuera, pantalla de trip
-	# con el motivo, sonido trip.wav) y ofrece reiniciar (planta.reiniciar()).
+	match tipo:
+		"rebalse":
+			_disparar_trip("REBALSE — " + mensaje)
+		"vacio":
+			_disparar_trip("TANQUE VACÍO — " + mensaje)
 	# TODO (PARCIAL · M4): registra todo evento en tu log persistente.
 
 
@@ -124,6 +208,8 @@ func _on_evento_escenario(mensaje: String) -> void:
 	# TODO (PARCIAL · M4): al historial y al log persistente también.
 	
 func _ciclar_valvula(tag: String) -> void:
+	if _en_trip:
+		return
 	var actual = planta.leer(tag + ".apertura")
 	# Encontrar el siguiente paso en el ciclo
 	var siguiente := PASOS_VALVULA[0]
