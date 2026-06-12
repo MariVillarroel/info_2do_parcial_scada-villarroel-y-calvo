@@ -66,25 +66,27 @@ func _ready() -> void:
 	_init_gestor_alarmas()
 
 func _init_sonidos() -> void:
-	_sfx_click     = _crear_player("res://assets/sounds/click.wav",    false)
-	_sfx_alarma    = _crear_player("res://assets/sounds/alarma.wav",   true)
-	_sfx_reconocer = _crear_player("res://assets/sounds/reconocer.wav",false)
-	_sfx_trip      = _crear_player("res://assets/sounds/trip.wav",     false)
+	_sfx_click     = _crear_player("res://assets/sounds/click.wav")
+	_sfx_reconocer = _crear_player("res://assets/sounds/reconocer.wav")
+	_sfx_trip      = _crear_player("res://assets/sounds/trip.wav")
+	_sfx_alarma = _crear_player("res://assets/sounds/alarma.wav")
+	_sfx_alarma.finished.connect(_on_alarma_finished)
 
-
-func _crear_player(ruta: String, loop: bool) -> AudioStreamPlayer:
+func _crear_player(ruta: String) -> AudioStreamPlayer:
 	var stream = load(ruta) as AudioStream
 	if stream == null:
-		push_warning("No se pudo cargar: " + ruta)
+		push_warning("Sonido no encontrado: " + ruta)
 		return null
-	# Activar loop en AudioStreamWAV si se pide
-	if loop and stream is AudioStreamWAV:
-		(stream as AudioStreamWAV).loop_mode = AudioStreamWAV.LOOP_FORWARD
-	var player = AudioStreamPlayer.new()
-	player.stream = stream
-	add_child(player)
-	return player
-
+	var p := AudioStreamPlayer.new()
+	p.stream = stream
+	add_child(p)
+	return p
+	
+func _on_alarma_finished() -> void:
+	# Reinicia el wav manualmente al terminar, si todavía debe sonar
+	if _gestor != null and _gestor.hay_activas_sin_reconocer() and not _en_trip:
+		_sfx_alarma.play()
+		
 func _init_panel_trip() -> void:
 	#el panel transparente 
 	_panel_trip = PanelContainer.new()
