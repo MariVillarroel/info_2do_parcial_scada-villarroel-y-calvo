@@ -49,6 +49,7 @@ const PASOS_VALVULA := [0.0, 0.5, 1.0]
 
 #alarmas 
 var _gestor: GestorAlarmas
+var _control: ControlAuto
 var _parpadeo_acum := 0.0
 var _parpadeo_visible := true
 const PARPADEO_INTERVALO := 0.5
@@ -64,6 +65,7 @@ func _ready() -> void:
 	_init_sonidos()
 	_init_panel_trip()
 	_init_gestor_alarmas()
+	_init_control_auto()
 
 func _init_sonidos() -> void:
 	_sfx_click     = _crear_player("res://assets/sounds/click.wav")
@@ -141,6 +143,12 @@ func _init_gestor_alarmas() -> void:
 	banner_alarma.text = "— sin alarmas —"
 	banner_alarma.add_theme_color_override("font_color", Color(0.55, 0.65, 0.55))
 
+func _init_control_auto() -> void:
+	_control = ControlAuto.new()
+	_control.planta = planta
+	add_child(_control)
+	boton_modo.text = "Modo: MANUAL"
+
 #helpers sonido
 func _play(player: AudioStreamPlayer) -> void:
 	if player != null and not player.playing:
@@ -175,6 +183,10 @@ func _on_reiniciar_pressed() -> void:
 	historial.clear()
 	banner_alarma.text = "— sin alarmas (M1) —"
 	banner_alarma.add_theme_color_override("font_color", Color(0.55, 0.60, 0.65))
+	_control.modo_auto = false
+	_control._v102_abierta = false
+	boton_modo.text = "Modo: MANUAL"
+	boton_modo.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))
 
 # Lista los .json de res://data/escenarios/ en el selector. Este patrón
 # (recorrer una carpeta de datos en vez de codificar la lista) es el mismo
@@ -210,19 +222,23 @@ func _on_tick_planta(datos: Dictionary) -> void:
 	f101_label.text = "F-101: %.3f m³/s" % datos["F101.caudal"]
 	f102_label.text = "F-102: %.3f m³/s" % datos["F102.caudal"]
 	f201_label.text = "F-201: %.3f m³/s" % datos["F201.caudal"]
+	
 	# TODO (PARCIAL · M1): pasa `datos` a tu gestor de alarmas y refleja el
 	# resultado: banner con la alarma más grave sin reconocer, parpadeo,
 	# bocina (alarma.wav en bucle mientras haya activas sin reconocer) y cada
 	# transición agregada al historial (ItemList).
-	
-	# TODO (PARCIAL · M2): en modo AUTO, pasa `datos` a tu control; los
-	# interlocks se aplican SIEMPRE.
-	# TODO (PARCIAL · M3): alimenta la tendencia (tendencia.agregar_muestra).
 	_gestor.evaluar(datos)
 	if datos["TK101.pct"] <= 0.5:
 		_disparar_trip("TANQUE VACÍO — TK-101 sin nivel")
 	_actualizar_bocina()
 	_actualizar_banner()
+	
+	# TODO (PARCIAL · M2): en modo AUTO, pasa `datos` a tu control; los
+	# interlocks se aplican SIEMPRE.
+	_control.procesar(datos)
+	
+	# TODO (PARCIAL · M3): alimenta la tendencia (tendencia.agregar_muestra).
+	
 
 func _actualizar_bocina() -> void:
 	if _gestor.hay_activas_sin_reconocer():
@@ -314,9 +330,13 @@ func _on_boton_reconocer_pressed() -> void:
 
 
 func _on_boton_modo_pressed() -> void:
-	# TODO (PARCIAL · M2): alterna MANUAL/AUTO y refléjalo en el texto del
-	# botón y en algún lugar visible del sinóptico.
-	pass
+	_control.modo_auto = not _control.modo_auto
+	if _control.modo_auto:
+		boton_modo.text = "Modo: AUTO"
+		boton_modo.add_theme_color_override("font_color", Color(0.2, 1.0, 0.4))
+	else:
+		boton_modo.text = "Modo: MANUAL"
+		boton_modo.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))
 
 
 

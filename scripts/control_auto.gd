@@ -30,6 +30,48 @@ extends Node
 # que tus comandos no siempre se obedezcan. Tu control debe decidir con las
 # LECTURAS, no con lo que cree haber comandado.
 
-var planta: PlantaSim = null
+#abre V-102 si cae < SET_LOW, cierra si sube > SET_HIGH
+const SET_LOW  := 40.0  
+const SET_HIGH := 60.0  
 
-# TODO (PARCIAL · M2): implementa la histéresis y los interlocks.
+#umbrales de bloqueo
+const INTERLOCK_TK101_LLENO  := 93.0 #bloquea bomba
+const INTERLOCK_TK201_LLENO  := 93.0 #bloquea V-102
+
+#estados
+var planta: PlantaSim = null
+var modo_auto := false
+var _v102_abierta := false
+
+func procesar(datos: Dictionary) -> void:
+	if planta == null:
+		return
+	_aplicar_interlocks(datos)
+	if modo_auto:
+		_control_histeresis(datos)
+		
+func _aplicar_interlocks(datos: Dictionary) -> void:
+	#TK-101 casi lleno -> apagar bomba
+	if datos["TK101.pct"] >= INTERLOCK_TK101_LLENO:
+		if datos["B101.marcha"]:
+			planta.comandar("B101.marcha", false)
+
+	#TK-201 casi lleno -> cerrar V-102
+	if datos["TK201.pct"] >= INTERLOCK_TK201_LLENO:
+		if datos["V102.apertura"] > 0.0:
+			planta.comandar("V102.apertura", 0.0)
+			_v102_abierta = false
+
+
+func _control_histeresis(datos: Dictionary) -> void:
+	var pct_201: float = datos["TK201.pct"]
+
+	if pct_201 <= SET_LOW and not _v102_abierta:
+		#nivel bajo -> abrir V-102
+		planta.comandar("V102.apertura", 1.0)
+		_v102_abierta = true
+
+	elif pct_201 >= SET_HIGH and _v102_abierta:
+		#nivel alto →-> cerrar V-102
+		planta.comandar("V102.apertura", 0.0)
+		_v102_abierta = false
