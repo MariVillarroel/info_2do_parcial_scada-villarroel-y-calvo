@@ -270,18 +270,20 @@ func _on_evento_escenario(mensaje: String) -> void:
 	
 #historial visual 
 func _on_alarma_activada(id: String, mensaje: String) -> void:
-	historial.add_item("ACTIVA " + mensaje)
+	var linea: String = _gestor.obtener_historial().back()
+	historial.add_item(linea)
 	historial.set_item_custom_fg_color(historial.item_count - 1, Color(1.0, 0.35, 0.35))
 	_scroll_historial()
 
 func _on_alarma_reconocida(id: String) -> void:
-	historial.add_item("RECONOCIDA " + id)
+	var linea: String = _gestor.obtener_historial().back()
+	historial.add_item(linea)
 	historial.set_item_custom_fg_color(historial.item_count - 1, Color(1.0, 0.85, 0.2))
 	_scroll_historial()
 
-
 func _on_alarma_normalizada(id: String) -> void:
-	historial.add_item("NORMAL " + id)
+	var linea: String = _gestor.obtener_historial().back()
+	historial.add_item(linea)
 	historial.set_item_custom_fg_color(historial.item_count - 1, Color(0.4, 0.9, 0.4))
 	_scroll_historial()
 
