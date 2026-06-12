@@ -44,10 +44,14 @@ var _en_trip := false
 var _panel_trip: PanelContainer # creado por código en _ready
 var _lbl_motivo_trip: Label
 
-#ciclos de apertura de valvulas (circulo)
+#valvulas (circulo)
 const PASOS_VALVULA := [0.0, 0.5, 1.0]
 
-#varibales
+#alarmas 
+var _gestor: GestorAlarmas
+var _parpadeo_acum := 0.0
+var _parpadeo_visible := true
+const PARPADEO_INTERVALO := 0.5
 
 
 #INICIALIZACION 
@@ -59,6 +63,7 @@ func _ready() -> void:
 	_poblar_selector_escenarios()
 	_init_sonidos()
 	_init_panel_trip()
+	_init_gestor_alarmas()
 
 func _init_sonidos() -> void:
 	_sfx_click     = _crear_player("res://assets/sounds/click.wav",    false)
@@ -124,6 +129,15 @@ func _init_panel_trip() -> void:
 	btn.custom_minimum_size = Vector2(200, 48)
 	btn.pressed.connect(_on_reiniciar_pressed)
 	columna.add_child(btn)
+	
+func _init_gestor_alarmas() -> void:
+	_gestor = GestorAlarmas.new()
+	add_child(_gestor)
+	_gestor.alarma_activada.connect(_on_alarma_activada)
+	_gestor.alarma_reconocida.connect(_on_alarma_reconocida)
+	_gestor.alarma_normalizada.connect(_on_alarma_normalizada)
+	banner_alarma.text = "— sin alarmas —"
+	banner_alarma.add_theme_color_override("font_color", Color(0.55, 0.65, 0.55))
 
 #helpers sonido
 func _play(player: AudioStreamPlayer) -> void:
@@ -171,7 +185,17 @@ func _poblar_selector_escenarios() -> void:
 		if archivo.ends_with(".json"):
 			selector_escenario.add_item(archivo)
 
-
+#parpadeo del banner: 
+func _process(delta: float) -> void:
+	if _gestor == null or not _gestor.hay_activas_sin_reconocer():
+		banner_alarma.modulate.a = 1.0
+		return
+	_parpadeo_acum += delta
+	if _parpadeo_acum >= PARPADEO_INTERVALO:
+		_parpadeo_acum = 0.0
+		_parpadeo_visible = not _parpadeo_visible
+	banner_alarma.modulate.a = 1.0 if _parpadeo_visible else 0.15
+	
 func _on_tick_planta(datos: Dictionary) -> void:
 	if _en_trip:
 		return
@@ -188,10 +212,30 @@ func _on_tick_planta(datos: Dictionary) -> void:
 	# resultado: banner con la alarma más grave sin reconocer, parpadeo,
 	# bocina (alarma.wav en bucle mientras haya activas sin reconocer) y cada
 	# transición agregada al historial (ItemList).
+	
 	# TODO (PARCIAL · M2): en modo AUTO, pasa `datos` a tu control; los
 	# interlocks se aplican SIEMPRE.
 	# TODO (PARCIAL · M3): alimenta la tendencia (tendencia.agregar_muestra).
+	_gestor.evaluar(datos)
+	if datos["TK101.pct"] <= 0.5:
+		_disparar_trip("TANQUE VACÍO — TK-101 sin nivel")
+	_actualizar_bocina()
+	_actualizar_banner()
 
+func _actualizar_bocina() -> void:
+	if _gestor.hay_activas_sin_reconocer():
+		_play(_sfx_alarma)
+	else:
+		_stop(_sfx_alarma)
+
+func _actualizar_banner() -> void:
+	var texto := _gestor.alarma_mas_grave()
+	if texto == "":
+		banner_alarma.text = "— sin alarmas —"
+		banner_alarma.add_theme_color_override("font_color", Color(0.55, 0.65, 0.55))
+	else:
+		banner_alarma.text = "⚠  " + texto
+		banner_alarma.add_theme_color_override("font_color", Color(1.0, 0.75, 0.1))
 
 func _on_evento_planta(tipo: String, mensaje: String) -> void:
 	print("EVENTO [", tipo, "]: ", mensaje)
@@ -202,10 +246,33 @@ func _on_evento_planta(tipo: String, mensaje: String) -> void:
 			_disparar_trip("TANQUE VACÍO — " + mensaje)
 	# TODO (PARCIAL · M4): registra todo evento en tu log persistente.
 
-
 func _on_evento_escenario(mensaje: String) -> void:
 	print("ESCENARIO: ", mensaje)
 	# TODO (PARCIAL · M4): al historial y al log persistente también.
+	
+#historial visual 
+func _on_alarma_activada(id: String, mensaje: String) -> void:
+	historial.add_item("ACTIVA " + mensaje)
+	historial.set_item_custom_fg_color(historial.item_count - 1, Color(1.0, 0.35, 0.35))
+	_scroll_historial()
+
+func _on_alarma_reconocida(id: String) -> void:
+	historial.add_item("RECONOCIDA " + id)
+	historial.set_item_custom_fg_color(historial.item_count - 1, Color(1.0, 0.85, 0.2))
+	_scroll_historial()
+
+
+func _on_alarma_normalizada(id: String) -> void:
+	historial.add_item("NORMAL " + id)
+	historial.set_item_custom_fg_color(historial.item_count - 1, Color(0.4, 0.9, 0.4))
+	_scroll_historial()
+
+
+func _scroll_historial() -> void:
+	# Mantiene el historial anclado al último evento
+	historial.ensure_current_is_visible()
+
+#clicks 
 	
 func _ciclar_valvula(tag: String) -> void:
 	if _en_trip:
@@ -222,13 +289,11 @@ func _ciclar_valvula(tag: String) -> void:
 	planta.comandar(tag + ".apertura", siguiente)
 	_play(_sfx_click)
 
-# --- clics en el sinóptico ---
-
 func _on_bomba_b101_presionada() -> void:
+	if _en_trip:
+		return
 	planta.comandar("B101.marcha", not planta.leer("B101.marcha"))
 	_play(_sfx_click)
-
-
 
 func _on_valvula_v102_presionada() -> void:
 	_ciclar_valvula("V102")
@@ -240,9 +305,10 @@ func _on_valvula_v201_presionada() -> void:
 # --- panel de operación ---
 
 func _on_boton_reconocer_pressed() -> void:
-	# TODO (PARCIAL · M1): reconoce las alarmas activas (silencia la bocina;
-	# las alarmas siguen visibles hasta normalizarse).
-	pass
+	_gestor.reconocer_todas()
+	_play(_sfx_reconocer)
+	_actualizar_bocina()
+	_actualizar_banner()
 
 
 func _on_boton_modo_pressed() -> void:
@@ -257,3 +323,4 @@ func _on_boton_escenario_pressed() -> void:
 		return
 	var archivo = selector_escenario.get_item_text(selector_escenario.selected)
 	escenarios.cargar_y_ejecutar("res://data/escenarios/" + archivo)
+	
