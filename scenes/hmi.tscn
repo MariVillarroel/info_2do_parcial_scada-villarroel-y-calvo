@@ -1,14 +1,14 @@
-[gd_scene load_steps=8 format=3 uid="uid://b2scadahmi2026a"]
+[gd_scene format=3 uid="uid://beki4xc8jmk7k"]
 
-[ext_resource type="Script" path="res://scripts/hmi.gd" id="1_hmi"]
-[ext_resource type="Script" path="res://scripts/planta_sim.gd" id="2_planta"]
-[ext_resource type="Script" path="res://scripts/reproductor_escenarios.gd" id="3_esc"]
-[ext_resource type="Script" path="res://scripts/tanque_widget.gd" id="4_tanque"]
-[ext_resource type="Script" path="res://scripts/bomba_widget.gd" id="5_bomba"]
-[ext_resource type="Script" path="res://scripts/valvula_widget.gd" id="6_valvula"]
-[ext_resource type="Script" path="res://scripts/tendencia_widget.gd" id="7_tendencia"]
+[ext_resource type="Script" uid="uid://cyej14ntu71ex" path="res://scripts/hmi.gd" id="1_hmi"]
+[ext_resource type="Script" uid="uid://c60vm7lixko5u" path="res://scripts/planta_sim.gd" id="2_planta"]
+[ext_resource type="Script" uid="uid://dtnhl7hs3us44" path="res://scripts/reproductor_escenarios.gd" id="3_esc"]
+[ext_resource type="Script" uid="uid://c0a6mu30xookn" path="res://scripts/tanque_widget.gd" id="4_tanque"]
+[ext_resource type="Script" uid="uid://c201lnyefpvyp" path="res://scripts/bomba_widget.gd" id="5_bomba"]
+[ext_resource type="Script" uid="uid://klq04erq8gk5" path="res://scripts/valvula_widget.gd" id="6_valvula"]
+[ext_resource type="Script" uid="uid://bcdajg3ejfd1g" path="res://scripts/tendencia_widget.gd" id="7_tendencia"]
 
-[node name="HMI" type="Control"]
+[node name="HMI" type="Control" unique_id=1475734256]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -17,7 +17,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_hmi")
 
-[node name="fondo" type="ColorRect" parent="."]
+[node name="fondo" type="ColorRect" parent="." unique_id=696687958]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -27,7 +27,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.07, 0.09, 0.12, 1)
 
-[node name="titulo" type="Label" parent="."]
+[node name="titulo" type="Label" parent="." unique_id=480287815]
 layout_mode = 0
 offset_left = 16.0
 offset_top = 8.0
@@ -35,83 +35,83 @@ offset_right = 700.0
 offset_bottom = 34.0
 text = "PLANTA DE AGUA — DOS TANQUES · HMI"
 
-[node name="planta" type="Node" parent="."]
+[node name="planta" type="Node" parent="." unique_id=2146598249]
 script = ExtResource("2_planta")
 
-[node name="escenarios" type="Node" parent="."]
+[node name="escenarios" type="Node" parent="." unique_id=501390182]
 script = ExtResource("3_esc")
 
-[node name="sinoptico" type="Control" parent="."]
-layout_mode = 0
+[node name="sinoptico" type="Control" parent="." unique_id=1270053089]
+anchors_preset = 0
 offset_top = 40.0
 offset_right = 760.0
 offset_bottom = 648.0
 mouse_filter = 2
 
-[node name="tuberia_pozo" type="Line2D" parent="sinoptico"]
+[node name="tuberia_pozo" type="Line2D" parent="sinoptico" unique_id=468169098]
 points = PackedVector2Array(30, 448, 90, 448)
 width = 6.0
 default_color = Color(0.33, 0.42, 0.52, 1)
 
-[node name="tuberia_bomba_tk101" type="Line2D" parent="sinoptico"]
+[node name="tuberia_bomba_tk101" type="Line2D" parent="sinoptico" unique_id=1340904072]
 points = PackedVector2Array(146, 448, 165, 448, 165, 70, 235, 70, 235, 104)
 width = 6.0
 default_color = Color(0.33, 0.42, 0.52, 1)
 
-[node name="tuberia_tk101_v102" type="Line2D" parent="sinoptico"]
+[node name="tuberia_tk101_v102" type="Line2D" parent="sinoptico" unique_id=1133043782]
 points = PackedVector2Array(235, 270, 235, 320, 330, 320)
 width = 6.0
 default_color = Color(0.33, 0.42, 0.52, 1)
 
-[node name="tuberia_v102_tk201" type="Line2D" parent="sinoptico"]
+[node name="tuberia_v102_tk201" type="Line2D" parent="sinoptico" unique_id=1384265225]
 points = PackedVector2Array(386, 320, 525, 320, 525, 344)
 width = 6.0
 default_color = Color(0.33, 0.42, 0.52, 1)
 
-[node name="tuberia_tk201_v201" type="Line2D" parent="sinoptico"]
+[node name="tuberia_tk201_v201" type="Line2D" parent="sinoptico" unique_id=1767441249]
 points = PackedVector2Array(525, 510, 525, 545, 640, 545)
 width = 6.0
 default_color = Color(0.33, 0.42, 0.52, 1)
 
-[node name="tuberia_red" type="Line2D" parent="sinoptico"]
+[node name="tuberia_red" type="Line2D" parent="sinoptico" unique_id=1096536799]
 points = PackedVector2Array(696, 545, 752, 545)
 width = 6.0
 default_color = Color(0.33, 0.42, 0.52, 1)
 
-[node name="pozo_label" type="Label" parent="sinoptico"]
+[node name="pozo_label" type="Label" parent="sinoptico" unique_id=929359252]
+layout_mode = 0
 offset_left = 6.0
 offset_top = 462.0
 offset_right = 80.0
 offset_bottom = 484.0
 text = "POZO"
 
-[node name="red_label" type="Label" parent="sinoptico"]
+[node name="red_label" type="Label" parent="sinoptico" unique_id=532250173]
+layout_mode = 0
 offset_left = 706.0
 offset_top = 505.0
 offset_right = 758.0
 offset_bottom = 527.0
 text = "RED"
 
-[node name="bomba_b101" type="Control" parent="sinoptico"]
-layout_mode = 0
+[node name="bomba_b101" type="Control" parent="sinoptico" unique_id=121732543]
+anchors_preset = 0
 offset_left = 90.0
 offset_top = 420.0
 offset_right = 146.0
 offset_bottom = 476.0
 script = ExtResource("5_bomba")
-etiqueta = "B-101"
 
-[node name="tanque_tk101" type="Control" parent="sinoptico"]
-layout_mode = 0
+[node name="tanque_tk101" type="Control" parent="sinoptico" unique_id=1457971286]
+anchors_preset = 0
 offset_left = 180.0
 offset_top = 100.0
 offset_right = 290.0
 offset_bottom = 270.0
 script = ExtResource("4_tanque")
-etiqueta = "TK-101"
 
-[node name="tanque_tk201" type="Control" parent="sinoptico"]
-layout_mode = 0
+[node name="tanque_tk201" type="Control" parent="sinoptico" unique_id=355032182]
+anchors_preset = 0
 offset_left = 470.0
 offset_top = 340.0
 offset_right = 580.0
@@ -119,17 +119,16 @@ offset_bottom = 510.0
 script = ExtResource("4_tanque")
 etiqueta = "TK-201"
 
-[node name="valvula_v102" type="Control" parent="sinoptico"]
-layout_mode = 0
+[node name="valvula_v102" type="Control" parent="sinoptico" unique_id=401452164]
+anchors_preset = 0
 offset_left = 330.0
 offset_top = 300.0
 offset_right = 386.0
 offset_bottom = 340.0
 script = ExtResource("6_valvula")
-etiqueta = "V-102"
 
-[node name="valvula_v201" type="Control" parent="sinoptico"]
-layout_mode = 0
+[node name="valvula_v201" type="Control" parent="sinoptico" unique_id=1085711474]
+anchors_preset = 0
 offset_left = 640.0
 offset_top = 525.0
 offset_right = 696.0
@@ -137,88 +136,91 @@ offset_bottom = 565.0
 script = ExtResource("6_valvula")
 etiqueta = "V-201"
 
-[node name="f101_label" type="Label" parent="sinoptico"]
+[node name="f101_label" type="Label" parent="sinoptico" unique_id=1803702634]
+layout_mode = 0
 offset_left = 245.0
 offset_top = 58.0
 offset_right = 420.0
 offset_bottom = 80.0
 text = "F101: — m³/s"
 
-[node name="f102_label" type="Label" parent="sinoptico"]
+[node name="f102_label" type="Label" parent="sinoptico" unique_id=927250216]
+layout_mode = 0
 offset_left = 392.0
 offset_top = 286.0
 offset_right = 560.0
 offset_bottom = 308.0
 text = "F102: — m³/s"
 
-[node name="f201_label" type="Label" parent="sinoptico"]
+[node name="f201_label" type="Label" parent="sinoptico" unique_id=1337771890]
+layout_mode = 0
 offset_left = 460.0
 offset_top = 575.0
 offset_right = 620.0
 offset_bottom = 597.0
 text = "F201: — m³/s"
 
-[node name="panel" type="PanelContainer" parent="."]
+[node name="panel" type="PanelContainer" parent="." unique_id=1092156437]
 layout_mode = 0
 offset_left = 760.0
 offset_top = 48.0
 offset_right = 1136.0
 offset_bottom = 632.0
 
-[node name="margen" type="MarginContainer" parent="panel"]
+[node name="margen" type="MarginContainer" parent="panel" unique_id=1704625852]
 layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 10
 
-[node name="columna" type="VBoxContainer" parent="panel/margen"]
+[node name="columna" type="VBoxContainer" parent="panel/margen" unique_id=463398435]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="titulo_panel" type="Label" parent="panel/margen/columna"]
+[node name="titulo_panel" type="Label" parent="panel/margen/columna" unique_id=2025813868]
 layout_mode = 2
 text = "OPERACIÓN"
 
-[node name="banner_alarma" type="Label" parent="panel/margen/columna"]
+[node name="banner_alarma" type="Label" parent="panel/margen/columna" unique_id=150696087]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.55, 0.6, 0.65, 1)
 text = "— sin alarmas (M1) —"
 
-[node name="fila_alarmas" type="HBoxContainer" parent="panel/margen/columna"]
+[node name="fila_alarmas" type="HBoxContainer" parent="panel/margen/columna" unique_id=925609964]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="boton_reconocer" type="Button" parent="panel/margen/columna/fila_alarmas"]
+[node name="boton_reconocer" type="Button" parent="panel/margen/columna/fila_alarmas" unique_id=20519198]
 layout_mode = 2
 text = "Reconocer"
 
-[node name="boton_modo" type="Button" parent="panel/margen/columna/fila_alarmas"]
+[node name="boton_modo" type="Button" parent="panel/margen/columna/fila_alarmas" unique_id=280480638]
 layout_mode = 2
 text = "Modo: MANUAL"
 
-[node name="historial" type="ItemList" parent="panel/margen/columna"]
+[node name="historial" type="ItemList" parent="panel/margen/columna" unique_id=166192665]
 custom_minimum_size = Vector2(0, 160)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="fila_escenario" type="HBoxContainer" parent="panel/margen/columna"]
+[node name="fila_escenario" type="HBoxContainer" parent="panel/margen/columna" unique_id=1218506720]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="selector_escenario" type="OptionButton" parent="panel/margen/columna/fila_escenario"]
+[node name="selector_escenario" type="OptionButton" parent="panel/margen/columna/fila_escenario" unique_id=1953364662]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="boton_escenario" type="Button" parent="panel/margen/columna/fila_escenario"]
+[node name="boton_escenario" type="Button" parent="panel/margen/columna/fila_escenario" unique_id=1901930569]
 layout_mode = 2
 text = "Inyectar"
 
-[node name="etiqueta_tendencia" type="Label" parent="panel/margen/columna"]
+[node name="etiqueta_tendencia" type="Label" parent="panel/margen/columna" unique_id=1202616732]
 layout_mode = 2
 text = "TENDENCIAS"
 
-[node name="tendencia" type="Control" parent="panel/margen/columna"]
+[node name="tendencia" type="Control" parent="panel/margen/columna" unique_id=1805304904]
 custom_minimum_size = Vector2(0, 210)
 layout_mode = 2
 script = ExtResource("7_tendencia")

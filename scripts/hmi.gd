@@ -33,14 +33,52 @@ extends Control
 # TODO (PARCIAL · M1/M2): instáncialos aquí (o como nodos hijos) y conéctalos
 # al tick de la planta.
 
+# Sonidos 
+var _sfx_click: AudioStreamPlayer
+var _sfx_alarma: AudioStreamPlayer
+var _sfx_reconocer: AudioStreamPlayer
+var _sfx_trip: AudioStreamPlayer
 
+#ciclos de apertura de valvulas (circulo)
+const PASOS_VALVULA := [0.0, 0.5, 1.0]
 func _ready() -> void:
 	escenarios.planta = planta
 	planta.tick.connect(_on_tick_planta)
 	planta.evento.connect(_on_evento_planta)
 	escenarios.evento_escenario.connect(_on_evento_escenario)
 	_poblar_selector_escenarios()
+	_init_sonidos()
 
+
+func _init_sonidos() -> void:
+	_sfx_click     = _crear_player("res://assets/sounds/click.wav",    false)
+	_sfx_alarma    = _crear_player("res://assets/sounds/alarma.wav",   true)
+	_sfx_reconocer = _crear_player("res://assets/sounds/reconocer.wav",false)
+	_sfx_trip      = _crear_player("res://assets/sounds/trip.wav",     false)
+
+
+func _crear_player(ruta: String, loop: bool) -> AudioStreamPlayer:
+	var stream = load(ruta) as AudioStream
+	if stream == null:
+		push_warning("No se pudo cargar: " + ruta)
+		return null
+	# Activar loop en AudioStreamWAV si se pide
+	if loop and stream is AudioStreamWAV:
+		(stream as AudioStreamWAV).loop_mode = AudioStreamWAV.LOOP_FORWARD
+	var player = AudioStreamPlayer.new()
+	player.stream = stream
+	add_child(player)
+	return player
+
+
+func _play(player: AudioStreamPlayer) -> void:
+	if player != null and not player.playing:
+		player.play()
+
+
+func _stop(player: AudioStreamPlayer) -> void:
+	if player != null:
+		player.stop()
 
 # Lista los .json de res://data/escenarios/ en el selector. Este patrón
 # (recorrer una carpeta de datos en vez de codificar la lista) es el mismo
@@ -55,11 +93,15 @@ func _poblar_selector_escenarios() -> void:
 
 
 func _on_tick_planta(datos: Dictionary) -> void:
-	# EJEMPLO (resuelto): el sinóptico refleja el nivel de TK-101.
+	# B1 
 	tanque_tk101.set_pct(datos["TK101.pct"])
-	# TODO (PARCIAL · B1): refleja TODO el resto del estado en cada tick:
-	# TK-201, marcha de la bomba, apertura de ambas válvulas y los tres
-	# caudales (f101_label, f102_label, f201_label, en m³/s con 3 decimales).
+	tanque_tk201.set_pct(datos["TK201.pct"])
+	bomba_b101.set_marcha(datos["B101.marcha"])
+	valvula_v102.set_apertura(datos["V102.apertura"])
+	valvula_v201.set_apertura(datos["V201.apertura"])
+	f101_label.text = "F-101: %.3f m³/s" % datos["F101.caudal"]
+	f102_label.text = "F-102: %.3f m³/s" % datos["F102.caudal"]
+	f201_label.text = "F-201: %.3f m³/s" % datos["F201.caudal"]
 	# TODO (PARCIAL · M1): pasa `datos` a tu gestor de alarmas y refleja el
 	# resultado: banner con la alarma más grave sin reconocer, parpadeo,
 	# bocina (alarma.wav en bucle mientras haya activas sin reconocer) y cada
@@ -80,28 +122,34 @@ func _on_evento_planta(tipo: String, mensaje: String) -> void:
 func _on_evento_escenario(mensaje: String) -> void:
 	print("ESCENARIO: ", mensaje)
 	# TODO (PARCIAL · M4): al historial y al log persistente también.
-
+	
+func _ciclar_valvula(tag: String) -> void:
+	var actual = planta.leer(tag + ".apertura")
+	# Encontrar el siguiente paso en el ciclo
+	var siguiente := PASOS_VALVULA[0]
+	for i in PASOS_VALVULA.size():
+		if actual < PASOS_VALVULA[i] - 0.05:
+			siguiente = PASOS_VALVULA[i]
+			break
+		elif i == PASOS_VALVULA.size() - 1:
+			siguiente = PASOS_VALVULA[0]
+	planta.comandar(tag + ".apertura", siguiente)
+	_play(_sfx_click)
 
 # --- clics en el sinóptico ---
 
 func _on_bomba_b101_presionada() -> void:
-	# EJEMPLO (resuelto): control manual de la bomba.
 	planta.comandar("B101.marcha", not planta.leer("B101.marcha"))
-	# TODO (PARCIAL · B4): clic con sonido (click.wav).
+	_play(_sfx_click)
+
 
 
 func _on_valvula_v102_presionada() -> void:
-	# TODO (PARCIAL · B2): control manual de V-102. Decide la interacción:
-	# ciclar 0 % → 50 % → 100 % → 0 % con cada clic, o un pequeño popup con
-	# slider. Recuerda que una válvula atascada NO obedece (verás el comando
-	# ignorado en la lectura: eso es correcto y tus alarmas deben delatarlo).
-	pass
+	_ciclar_valvula("V102")
 
 
 func _on_valvula_v201_presionada() -> void:
-	# TODO (PARCIAL · B2): igual que V-102.
-	pass
-
+	_ciclar_valvula("V201")
 
 # --- panel de operación ---
 
@@ -117,9 +165,8 @@ func _on_boton_modo_pressed() -> void:
 	pass
 
 
+
 func _on_boton_escenario_pressed() -> void:
-	# Resuelto: inyecta el escenario seleccionado. Tus alarmas y tu control
-	# deben reaccionar solos a lo que venga.
 	if selector_escenario.selected < 0:
 		return
 	var archivo = selector_escenario.get_item_text(selector_escenario.selected)
