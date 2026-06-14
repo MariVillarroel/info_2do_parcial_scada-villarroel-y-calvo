@@ -44,14 +44,34 @@ enum Estado { NORMAL, ACTIVA, RECONOCIDA }
 const PRIORIDAD := { "HH": 4, "LL": 3, "H": 2, "L": 1 }
 
 #limites
-var limites := {
-	"TK101.pct": { "LL": 5.0, "L": 15.0, "H": 85.0, "HH": 95.0 },
-	"TK201.pct": { "LL": 5.0, "L": 15.0, "H": 85.0, "HH": 95.0 },
-}
+var limites := {}
 
 var _alarmas := {}
 var _historial: Array = [] 
+func _ready() -> void:
+	_cargar_limites()
 
+
+func _cargar_limites() -> void:
+
+	var archivo := FileAccess.open(
+		"res://data/alarmas.json",
+		FileAccess.READ
+	)
+
+	if archivo == null:
+		push_error("No se pudo abrir alarmas.json")
+		return
+
+	var datos = JSON.parse_string(
+		archivo.get_as_text()
+	)
+
+	if datos == null:
+		push_error("JSON inválido")
+		return
+
+	limites = datos
 func evaluar(datos: Dictionary) -> void:
 	for tag in limites:
 		if not datos.has(tag):
