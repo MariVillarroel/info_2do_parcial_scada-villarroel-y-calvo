@@ -50,6 +50,7 @@ const PASOS_VALVULA := [0.0, 0.5, 1.0]
 #alarmas 
 var _gestor: GestorAlarmas
 var _control: ControlAuto
+var _logger: EventLogger
 var _parpadeo_acum := 0.0
 var _parpadeo_visible := true
 const PARPADEO_INTERVALO := 0.5
@@ -67,6 +68,7 @@ func _ready() -> void:
 	_init_panel_trip()
 	_init_gestor_alarmas()
 	_init_control_auto()
+	_init_logger()
 	tendencia.poner_linea_referencia(
 	"LL",
 	5,
@@ -172,7 +174,11 @@ func _init_control_auto() -> void:
 	_control.planta = planta
 	add_child(_control)
 	boton_modo.text = "Modo: MANUAL"
+func _init_logger() -> void:
 
+	_logger = EventLogger.new()
+
+	add_child(_logger)
 #helpers sonido
 func _play(player: AudioStreamPlayer) -> void:
 	if player != null and not player.playing:
@@ -194,6 +200,9 @@ func _disparar_trip(motivo: String) -> void:
 	_play(_sfx_trip)
 	# Mostrar pantalla
 	_lbl_motivo_trip.text = motivo
+	_logger.escribir(
+	"TRIP: " + motivo
+)
 	_panel_trip.visible = true
 
 
@@ -273,10 +282,10 @@ func _on_tick_planta(datos: Dictionary) -> void:
 			datos["TK101.pct"]
 		)
 
-	tendencia.agregar_muestra(
-		"TK201",
-		datos["TK201.pct"]
-	)
+		tendencia.agregar_muestra(
+			"TK201",
+			datos["TK201.pct"]
+		)
 func _actualizar_bocina() -> void:
 	if _gestor.hay_activas_sin_reconocer():
 		_play(_sfx_alarma)
@@ -294,35 +303,51 @@ func _actualizar_banner() -> void:
 
 func _on_evento_planta(tipo: String, mensaje: String) -> void:
 	print("EVENTO [", tipo, "]: ", mensaje)
+
+	_logger.escribir(
+		"PLANTA [" + tipo + "]: " + mensaje
+	)
+
 	match tipo:
 		"rebalse":
 			_disparar_trip("REBALSE — " + mensaje)
+
 		"vacio":
 			_disparar_trip("TANQUE VACÍO — " + mensaje)
-	# TODO (PARCIAL · M4): registra todo evento en tu log persistente.
-
+			
 func _on_evento_escenario(mensaje: String) -> void:
 	print("ESCENARIO: ", mensaje)
-	# TODO (PARCIAL · M4): al historial y al log persistente también.
-	
+	_logger.escribir(
+	"ESCENARIO: " + mensaje
+)
 #historial visual 
+
 func _on_alarma_activada(id: String, mensaje: String) -> void:
 	var linea: String = _gestor.obtener_historial().back()
 	historial.add_item(linea)
 	historial.set_item_custom_fg_color(historial.item_count - 1, Color(1.0, 0.35, 0.35))
 	_scroll_historial()
+	_logger.escribir(
+	"ALARMA ACTIVA: " + id
+)
 
 func _on_alarma_reconocida(id: String) -> void:
 	var linea: String = _gestor.obtener_historial().back()
 	historial.add_item(linea)
 	historial.set_item_custom_fg_color(historial.item_count - 1, Color(1.0, 0.85, 0.2))
 	_scroll_historial()
+	_logger.escribir(
+	"ALARMA RECONOCIDA: " + id
+)
 
 func _on_alarma_normalizada(id: String) -> void:
 	var linea: String = _gestor.obtener_historial().back()
 	historial.add_item(linea)
 	historial.set_item_custom_fg_color(historial.item_count - 1, Color(0.4, 0.9, 0.4))
 	_scroll_historial()
+	_logger.escribir(
+	"ALARMA NORMAL: " + id
+)
 
 
 func _scroll_historial() -> void:
