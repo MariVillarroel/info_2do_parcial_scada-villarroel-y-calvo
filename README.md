@@ -67,6 +67,141 @@ Los umbrales de interlock (93%) se fijaron por debajo del límite HH (95%) para 
 
 El botón **Modo** alterna entre MANUAL y AUTO. En MANUAL el operador controla todo con clics (respetando los interlocks). En AUTO la histéresis gestiona V-102 automáticamente.
 
+
+### M3 — Tendencias en tiempo real
+
+Se implementó un widget de tendencias personalizado (`TendenciaWidget`) dibujado completamente mediante `_draw()`.
+
+Características:
+
+* Visualización simultánea de los niveles de **TK-101** y **TK-201**.
+* Escala vertical fija de **0% a 100%**.
+* Buffer circular limitado a **300 muestras** para evitar crecimiento indefinido de memoria.
+* Leyenda con colores diferenciados:
+
+  * TK-101 → Cyan
+  * TK-201 → Verde
+* Líneas de referencia correspondientes a los límites de alarma:
+
+  * LL = 5%
+  * L = 15%
+  * H = 85%
+  * HH = 95%
+
+La tendencia se alimenta periódicamente desde el HMI mediante `agregar_muestra()` y permite visualizar claramente la evolución de los niveles durante los escenarios de falla.
+
+Por ejemplo, en el escenario de pico de demanda puede observarse la caída progresiva de TK-201 y su posterior recuperación cuando la demanda vuelve a la normalidad.
+
+---
+
+### M4 — Configuración en datos y log persistente
+
+#### Configuración externa
+
+Los parámetros físicos de la planta fueron extraídos a:
+
+`res://data/planta.json`
+
+Incluye:
+
+* Altura de tanques
+* Área de tanques
+* Caudal de bomba
+* Constantes hidráulicas de válvulas
+
+Los límites de alarma fueron extraídos a:
+
+`res://data/alarmas.json`
+
+De esta forma es posible modificar el comportamiento de la planta o de las alarmas sin recompilar ni modificar código fuente.
+
+#### Log persistente
+
+Se implementó un sistema de registro mediante la clase `EventLogger`.
+
+Archivo generado:
+
+`user://eventos.log`
+
+Eventos registrados:
+
+* Alarmas activadas
+* Alarmas reconocidas
+* Alarmas normalizadas
+* Eventos de escenario
+* Eventos de planta
+* Estados de TRIP
+
+El archivo permanece entre ejecuciones, permitiendo revisar eventos históricos incluso después de cerrar y volver a abrir la aplicación.
+
+---
+
+## Decisiones de diseño
+
+### Alarmas
+
+Se utilizó prioridad:
+
+HH > LL > H > L
+
+porque en operación industrial una condición HH suele representar un riesgo inmediato de rebalse, mientras que LL representa riesgo de pérdida de suministro.
+
+### Tendencias
+
+Se eligió una escala fija 0–100% para facilitar la comparación visual entre tanques y evitar cambios dinámicos de escala que dificulten la interpretación del operador.
+
+### Control automático
+
+Se utilizó histéresis en lugar de control proporcional o PID para mantener la simplicidad del sistema y evitar oscilaciones frecuentes de la válvula V-102.
+
+### Interlocks
+
+Los enclavamientos fueron colocados antes del límite HH para actuar preventivamente y no reactivamente.
+
+---
+
+## Archivos de configuración
+
+### planta.json
+
+Contiene la parametrización física de la planta:
+
+* Altura de tanques
+* Área de tanques
+* Caudal de bomba
+* Constantes hidráulicas
+
+### alarmas.json
+
+Contiene los límites:
+
+* LL
+* L
+* H
+* HH
+
+para cada variable supervisada.
+
+Modificar estos archivos cambia inmediatamente el comportamiento de la simulación sin necesidad de modificar código.
+
+---
+
+## Estado del proyecto
+
+Requisitos implementados:
+
+* ✅ B1 — Sinóptico completo
+* ✅ B2 — Control manual
+* ✅ B3 — TRIP y reinicio
+* ✅ B4 — Sonidos
+* ✅ B5 — Sin errores en consola
+* ✅ M1 — Alarmas
+* ✅ M2 — Control automático e interlocks
+* ✅ M3 — Tendencias en tiempo real
+* ✅ M4 — Configuración externa y log persistente
+
+Proyecto desarrollado sobre Godot 4.6.
+
 ## Recursos externos consultados
 
 - Documentación oficial de Godot 4: https://docs.godotengine.org/en/stable/
