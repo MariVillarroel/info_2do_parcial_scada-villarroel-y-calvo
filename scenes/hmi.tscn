@@ -199,6 +199,10 @@ text = "Reconocer"
 layout_mode = 2
 text = "Modo: MANUAL"
 
+[node name="boton_tema" type="Button" parent="panel/margen/columna/fila_alarmas" unique_id=1425234171]
+layout_mode = 2
+text = "🌙 Oscuro"
+
 [node name="historial" type="ItemList" parent="panel/margen/columna" unique_id=166192665]
 custom_minimum_size = Vector2(0, 160)
 layout_mode = 2
@@ -230,4 +234,5 @@ script = ExtResource("7_tendencia")
 [connection signal="presionada" from="sinoptico/valvula_v201" to="." method="_on_valvula_v201_presionada"]
 [connection signal="pressed" from="panel/margen/columna/fila_alarmas/boton_reconocer" to="." method="_on_boton_reconocer_pressed"]
 [connection signal="pressed" from="panel/margen/columna/fila_alarmas/boton_modo" to="." method="_on_boton_modo_pressed"]
+[connection signal="pressed" from="panel/margen/columna/fila_alarmas/boton_tema" to="." method="_on_boton_tema_pressed"]
 [connection signal="pressed" from="panel/margen/columna/fila_escenario/boton_escenario" to="." method="_on_boton_escenario_pressed"]

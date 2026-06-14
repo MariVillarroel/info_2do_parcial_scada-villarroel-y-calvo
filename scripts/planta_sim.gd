@@ -42,13 +42,7 @@ signal evento(tipo: String, mensaje: String)
 # TODO (PARCIAL · M4): mueve estos parámetros (y tus límites de alarma) a un
 # archivo de datos en res://data/ y cárgalos aquí; cambiar la planta no debe
 # requerir tocar código.
-var params := {
-	"TK101": {"altura_m": 4.0, "area_m2": 1.5},
-	"TK201": {"altura_m": 4.0, "area_m2": 2.0},
-	"B101": {"caudal_m3s": 0.045},
-	"V102": {"k": 0.030},
-	"V201": {"k": 0.027},
-}
+var params := {}
 
 # múltiplo de velocidad de la simulación (los controles de tu HMI pueden cambiarlo)
 @export var velocidad := 1.0
@@ -69,8 +63,37 @@ var _factor_demanda := 1.0
 # para emitir eventos de rebalse/vacío solo en la transición
 var _rebalsando := {"TK101": false, "TK201": false}
 var _vacio := {"TK201": false}
+func _ready() -> void:
+	_cargar_parametros()
 
+func _cargar_parametros() -> void:
 
+	var archivo := FileAccess.open(
+		"res://data/planta.json",
+		FileAccess.READ
+	)
+
+	if archivo == null:
+		push_error("No se pudo abrir planta.json")
+		return
+
+	var texto := archivo.get_as_text()
+
+	print(texto)
+
+	var json = JSON.parse_string(texto)
+
+	print(json)
+
+	if json == null:
+		push_error("planta.json inválido")
+		return
+
+	params = json
+
+	print("PARAMS CARGADOS:")
+	print(params)
+	
 func _physics_process(delta: float) -> void:
 	var dt = delta * velocidad
 	tiempo += dt

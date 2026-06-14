@@ -27,7 +27,7 @@ extends Control
 @onready var boton_modo: Button = $panel/margen/columna/fila_alarmas/boton_modo
 @onready var selector_escenario: OptionButton = $panel/margen/columna/fila_escenario/selector_escenario
 @onready var tendencia: TendenciaWidget = $panel/margen/columna/tendencia
-
+@onready var boton_tema: Button = $panel/margen/columna/fila_alarmas/boton_tema
 # === ALARMAS (M1) Y CONTROL (M2) ===
 # Los esqueletos están en scripts/gestor_alarmas.gd y scripts/control_auto.gd.
 # TODO (PARCIAL · M1/M2): instáncialos aquí (o como nodos hijos) y conéctalos
@@ -57,6 +57,10 @@ const PARPADEO_INTERVALO := 0.5
 var _acum_tendencia := 0.0
 const INTERVALO_TENDENCIA := 1.0
 
+
+var _theme_manager: ThemeManager
+
+
 #INICIALIZACION 
 func _ready() -> void:
 	escenarios.planta = planta
@@ -69,6 +73,8 @@ func _ready() -> void:
 	_init_gestor_alarmas()
 	_init_control_auto()
 	_init_logger()
+	_theme_manager = ThemeManager.new()
+	add_child(_theme_manager)
 	tendencia.poner_linea_referencia(
 	"LL",
 	5,
@@ -410,3 +416,13 @@ func _on_boton_escenario_pressed() -> void:
 	var archivo = selector_escenario.get_item_text(selector_escenario.selected)
 	escenarios.cargar_y_ejecutar("res://data/escenarios/" + archivo)
 	
+
+
+func _on_boton_tema_pressed() -> void:
+
+	_theme_manager.alternar(self)
+
+	if _theme_manager.modo_oscuro:
+		boton_tema.text = "☀ Claro"
+	else:
+		boton_tema.text = "🌙 Oscuro"
