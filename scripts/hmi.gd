@@ -53,7 +53,8 @@ var _control: ControlAuto
 var _parpadeo_acum := 0.0
 var _parpadeo_visible := true
 const PARPADEO_INTERVALO := 0.5
-
+var _acum_tendencia := 0.0
+const INTERVALO_TENDENCIA := 1.0
 
 #INICIALIZACION 
 func _ready() -> void:
@@ -66,6 +67,29 @@ func _ready() -> void:
 	_init_panel_trip()
 	_init_gestor_alarmas()
 	_init_control_auto()
+	tendencia.poner_linea_referencia(
+	"LL",
+	5,
+	Color.RED
+	)
+
+	tendencia.poner_linea_referencia(
+		"L",
+		15,
+		Color.ORANGE
+	)
+
+	tendencia.poner_linea_referencia(
+		"H",
+		85,
+		Color.ORANGE
+	)
+
+	tendencia.poner_linea_referencia(
+		"HH",
+		95,
+		Color.RED
+	)
 
 func _init_sonidos() -> void:
 	_sfx_click     = _crear_player("res://assets/sounds/click.wav")
@@ -238,8 +262,21 @@ func _on_tick_planta(datos: Dictionary) -> void:
 	_control.procesar(datos)
 	
 	# TODO (PARCIAL · M3): alimenta la tendencia (tendencia.agregar_muestra).
-	
+	_acum_tendencia += get_process_delta_time()
 
+	if _acum_tendencia >= INTERVALO_TENDENCIA:
+
+		_acum_tendencia = 0.0
+
+		tendencia.agregar_muestra(
+			"TK101",
+			datos["TK101.pct"]
+		)
+
+	tendencia.agregar_muestra(
+		"TK201",
+		datos["TK201.pct"]
+	)
 func _actualizar_bocina() -> void:
 	if _gestor.hay_activas_sin_reconocer():
 		_play(_sfx_alarma)
